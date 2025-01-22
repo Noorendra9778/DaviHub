@@ -3,12 +3,14 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local UserInputService = game:GetService("UserInputService")
 
 function DaviHub:CreateWindow(settings)
     settings = settings or {}
     local windowName = settings.Name or "DaviHub"
-    local themeColor = settings.ThemeColor or Color3.fromRGB(46, 46, 46)
-    local textColor = settings.TextColor or Color3.fromRGB(255, 255, 255)
+    local themeColor = settings.ThemeColor or Color3.fromRGB(46, 46, 46) -- Updated theme color
+    local textColor = settings.TextColor or Color3.fromRGB(255, 255, 255) -- White text color
+    local openAnimation = settings.OpenAnimation or true
 
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Parent = PlayerGui
@@ -23,25 +25,23 @@ function DaviHub:CreateWindow(settings)
     MainFrame.ClipsDescendants = true
     MainFrame.Active = true
     MainFrame.Draggable = true
-    MainFrame.Visible = false
 
     local UICorner = Instance.new("UICorner", MainFrame)
-    UICorner.CornerRadius = UDim.new(0, 16)
+    UICorner.CornerRadius = UDim.new(0, 16) -- Adjusted corner radius
 
     local TitleBar = Instance.new("Frame")
     TitleBar.Parent = MainFrame
-    TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Slightly darker for contrast
     TitleBar.Size = UDim2.new(1, 0, 0.1, 0)
 
     local TitleText = Instance.new("TextLabel")
     TitleText.Parent = TitleBar
-    TitleText.Text = ""
+    TitleText.Text = windowName
     TitleText.Font = Enum.Font.GothamBold
     TitleText.TextSize = 22
     TitleText.TextColor3 = textColor
     TitleText.BackgroundTransparency = 1
-    TitleText.Size = UDim2.new(0.5, 0, 1, 0)
-    TitleText.Position = UDim2.new(-0.5, 0, 0, 0) -- Start off-screen
+    TitleText.Size = UDim2.new(0.8, 0, 1, 0)
 
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Parent = TitleBar
@@ -58,47 +58,90 @@ function DaviHub:CreateWindow(settings)
     CloseButton.Text = "X"
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.TextSize = 20
-    CloseButton.TextColor3 = Color3.fromRGB(255, 85, 85)
+    CloseButton.TextColor3 = Color3.fromRGB(255, 85, 85) -- Red close button text
     CloseButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     CloseButton.Size = UDim2.new(0.1, 0, 1, 0)
     CloseButton.Position = UDim2.new(0.9, 0, 0, 0)
 
-    -- Tabs and Content Area
     local TabsContainer = Instance.new("Frame")
     TabsContainer.Parent = MainFrame
-    TabsContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    TabsContainer.Size = UDim2.new(0.25, 0, 0.9, 0)
+    TabsContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35) -- Tabs darker background
+    TabsContainer.Size = UDim2.new(0.2, 0, 0.9, 0)
     TabsContainer.Position = UDim2.new(0, 0, 0.1, 0)
 
     local ContentFrame = Instance.new("Frame")
     ContentFrame.Parent = MainFrame
     ContentFrame.BackgroundColor3 = Color3.fromRGB(46, 46, 46)
-    ContentFrame.Size = UDim2.new(0.75, 0, 0.9, 0)
-    ContentFrame.Position = UDim2.new(0.25, 0, 0.1, 0)
+    ContentFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
+    ContentFrame.Position = UDim2.new(0.2, 0, 0.1, 0)
 
-    -- Open Animation
-    MainFrame.Visible = false
-    TitleText.Text = windowName
+    local TabsLayout = Instance.new("UIListLayout", TabsContainer)
+    TabsLayout.Padding = UDim.new(0, 5)
 
-    -- Slide title text across the title bar
-    TweenService:Create(
-        TitleText,
-        TweenInfo.new(1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-        {Position = UDim2.new(0.25, 0, 0, 0)} -- Center the title
-    ):Play()
+    local Pages = {}
 
-    -- Fade in and slide the main frame
-    wait(1.2)
-    MainFrame.Visible = true
-    MainFrame.Position = UDim2.new(0.3, 0, -0.8, 0)
-    TweenService:Create(
-        MainFrame,
-        TweenInfo.new(1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-        {Position = UDim2.new(0.3, 0, 0.2, 0)}
-    ):Play()
+    if openAnimation then
+        MainFrame.Position = UDim2.new(0.3, 0, -0.8, 0)
+        TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0.3, 0, 0.2, 0)}):Play()
+    end
+
+    MinimizeButton.MouseButton1Click:Connect(function()
+        ContentFrame.Visible = not ContentFrame.Visible
+        TabsContainer.Visible = not TabsContainer.Visible
+    end)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    local function AddTab(tabName)
+        local TabButton = Instance.new("TextButton")
+        TabButton.Parent = TabsContainer
+        TabButton.Text = tabName
+        TabButton.Font = Enum.Font.GothamBold
+        TabButton.TextSize = 18
+        TabButton.TextColor3 = textColor
+        TabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        TabButton.Size = UDim2.new(1, 0, 0, 30)
+
+        local Page = Instance.new("ScrollingFrame")
+        Page.Parent = ContentFrame
+        Page.Visible = false
+        Page.Size = UDim2.new(1, 0, 1, 0)
+        Page.BackgroundTransparency = 1
+
+        Pages[TabButton] = Page
+
+        TabButton.MouseButton1Click:Connect(function()
+            for button, page in pairs(Pages) do
+                button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                page.Visible = false
+            end
+            TabButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+            Page.Visible = true
+        end)
+
+        return Page
+    end
+
+    local function AddButton(parent, text, callback)
+        local Button = Instance.new("TextButton")
+        Button.Parent = parent
+        Button.Text = text
+        Button.Font = Enum.Font.Gotham
+        Button.TextSize = 18
+        Button.TextColor3 = textColor
+        Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Button.Size = UDim2.new(1, 0, 0, 30)
+
+        Button.MouseButton1Click:Connect(function()
+            if callback then callback() end
+        end)
+    end
 
     return {
-        -- Other functionalities (e.g., AddTab, AddButton) can be added here
+        AddTab = AddTab,
+        AddButton = AddButton,
     }
 end
 
