@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local UserInputService = game:GetService("UserInputService")
 
 function DaviHub:CreateWindow(settings)
     settings = settings or {}
@@ -32,7 +33,6 @@ function DaviHub:CreateWindow(settings)
     TitleBar.Parent = MainFrame
     TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     TitleBar.Size = UDim2.new(1, 0, 0.1, 0)
-    TitleBar.ZIndex = 2 -- Ensure it always appears on top
 
     local TitleText = Instance.new("TextLabel")
     TitleText.Parent = TitleBar
@@ -66,16 +66,14 @@ function DaviHub:CreateWindow(settings)
     local TabsContainer = Instance.new("Frame")
     TabsContainer.Parent = MainFrame
     TabsContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    TabsContainer.Size = UDim2.new(0.2, -5, 0.9, 0) -- Slightly reduced width for padding
+    TabsContainer.Size = UDim2.new(0.2, 0, 0.9, 0)
     TabsContainer.Position = UDim2.new(0, 0, 0.1, 0)
-    TabsContainer.Visible = true -- Ensure visibility toggles properly
 
     local ContentFrame = Instance.new("Frame")
     ContentFrame.Parent = MainFrame
     ContentFrame.BackgroundColor3 = Color3.fromRGB(46, 46, 46)
-    ContentFrame.Size = UDim2.new(0.8, -5, 0.9, 0) -- Adjusted for alignment
-    ContentFrame.Position = UDim2.new(0.2, 5, 0.1, 0) -- Adjusted to leave space for TabsContainer
-    ContentFrame.Visible = true -- Matches TabsContainer visibility state
+    ContentFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
+    ContentFrame.Position = UDim2.new(0.2, 0, 0.1, 0)
 
     local TabsLayout = Instance.new("UIListLayout", TabsContainer)
     TabsLayout.Padding = UDim.new(0, 5)
@@ -83,7 +81,6 @@ function DaviHub:CreateWindow(settings)
 
     local Pages = {}
     local CurrentTab = nil
-    local Minimized = false -- Track minimized state
 
     if openAnimation then
         MainFrame.Position = UDim2.new(0.3, 0, -0.8, 0)
@@ -91,16 +88,9 @@ function DaviHub:CreateWindow(settings)
     end
 
     MinimizeButton.MouseButton1Click:Connect(function()
-        Minimized = not Minimized
-        if Minimized then
-            TabsContainer.Visible = false
-            ContentFrame.Visible = false
-            MainFrame.Size = UDim2.new(0.4, 0, 0.1, 0) -- Shrink to header size
-        else
-            TabsContainer.Visible = true
-            ContentFrame.Visible = true
-            MainFrame.Size = UDim2.new(0.4, 0, 0.6, 0) -- Restore full size
-        end
+        local visible = not ContentFrame.Visible
+        ContentFrame.Visible = visible
+        TabsContainer.Visible = visible
     end)
 
     CloseButton.MouseButton1Click:Connect(function()
@@ -115,7 +105,7 @@ function DaviHub:CreateWindow(settings)
         TabButton.TextSize = 18
         TabButton.TextColor3 = textColor
         TabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-        TabButton.Size = UDim2.new(1, -10, 0, 30) -- Adjusted width for padding
+        TabButton.Size = UDim2.new(1, 0, 0, 30)
 
         local Page = Instance.new("ScrollingFrame")
         Page.Parent = ContentFrame
@@ -151,7 +141,7 @@ function DaviHub:CreateWindow(settings)
         Button.TextSize = 18
         Button.TextColor3 = textColor
         Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-        Button.Size = UDim2.new(1, -10, 0, 30) -- Adjusted for padding
+        Button.Size = UDim2.new(1, 0, 0, 30)
 
         Button.MouseButton1Click:Connect(function()
             if callback then callback() end
