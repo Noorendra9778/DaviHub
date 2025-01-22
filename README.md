@@ -72,3 +72,16 @@ Window.AddButton(SettingsTab, "Change Settings", function()
     print("Settings Changed!")
 end)
 
+
+_______________________
+
+You can now easily change the theme of the window by passing the desired theme to the CreateWindow function like so:
+
+local Window = DaviHub:CreateWindow({
+    Name = "My Custom Hub",
+    Theme = DaviHub.Themes.Dark,  -- Choose the theme (Dark, Light, Custom)
+    OpenAnimation = true
+})
+
+This should give the UI a much more professional and modern look. Let me know if you'd like any more adjustments!
+
