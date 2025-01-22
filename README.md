@@ -7,7 +7,7 @@ Installation
 To use the DaviHub UI library in your Roblox project, load it using the following code:
 
 <pre><code class="language-lua">
-local DaviHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourGitHubUsername/YourRepo/main/DaviHub.lua"))()
+local DaviHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/Noorendra9778/DaviHub/main/DaviHub.lua"))()
 </code></pre>Creating a Window
 
 To create a custom window, use the CreateWindow method. Here’s an example:
