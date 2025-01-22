@@ -5,39 +5,11 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local UserInputService = game:GetService("UserInputService")
 
--- Theme Definitions
-local Themes = {
-    Light = {
-        Background = Color3.fromRGB(255, 255, 255),
-        Primary = Color3.fromRGB(143, 4, 182),
-        Secondary = Color3.fromRGB(200, 200, 200),
-        Text = Color3.fromRGB(0, 0, 0),
-        Button = Color3.fromRGB(0, 122, 255),
-        ButtonText = Color3.fromRGB(255, 255, 255)
-    },
-    Dark = {
-        Background = Color3.fromRGB(35, 35, 35),
-        Primary = Color3.fromRGB(0, 150, 255),
-        Secondary = Color3.fromRGB(50, 50, 50),
-        Text = Color3.fromRGB(255, 255, 255),
-        Button = Color3.fromRGB(255, 87, 34),
-        ButtonText = Color3.fromRGB(255, 255, 255)
-    },
-    Custom = {
-        Background = Color3.fromRGB(50, 50, 50),
-        Primary = Color3.fromRGB(50, 150, 255),
-        Secondary = Color3.fromRGB(62, 62, 62),
-        Text = Color3.fromRGB(255, 255, 255),
-        Button = Color3.fromRGB(0, 0, 0),
-        ButtonText = Color3.fromRGB(255, 255, 255)
-    }
-}
-
 -- Create the main UI window
 function DaviHub:CreateWindow(settings)
     settings = settings or {}
     local windowName = settings.Name or "DaviHub"
-    local theme = settings.Theme or Themes.Custom
+    local themeColor = settings.ThemeColor or Color3.fromRGB(143, 4, 182)
     local openAnimation = settings.OpenAnimation or true
 
     -- Main ScreenGui
@@ -46,82 +18,78 @@ function DaviHub:CreateWindow(settings)
     ScreenGui.Name = windowName
     ScreenGui.ResetOnSpawn = false
 
-    -- Main Frame (with transparency and shadow)
+    -- Main Frame
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
-    MainFrame.BackgroundColor3 = theme.Background
+    MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
+    MainFrame.BackgroundTransparency = 0.7 -- Semi-transparent effect
     MainFrame.Size = UDim2.new(0.4, 0, 0.6, 0) -- Scaled size for PC and mobile
     MainFrame.Position = UDim2.new(0.3, 0, 0.2, 0)
     MainFrame.ClipsDescendants = true
     MainFrame.Active = true
     MainFrame.Draggable = true
-    MainFrame.BackgroundTransparency = 0.2
-
-    -- Add shadow effect
-    local Shadow = Instance.new("ImageLabel")
-    Shadow.Parent = MainFrame
-    Shadow.Size = UDim2.new(1, 10, 1, 10)
-    Shadow.Position = UDim2.new(0, -5, 0, -5)
-    Shadow.BackgroundTransparency = 1
-    Shadow.Image = "rbxassetid://4155801252"  -- Default Roblox shadow
-    Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.8
 
     -- UI Corner (Rounded Edges)
     local UICorner = Instance.new("UICorner", MainFrame)
-    UICorner.CornerRadius = UDim.new(0, 12)
+    UICorner.CornerRadius = UDim.new(0, 12) -- Rounded corners for a more modern look
 
-    -- Title Bar (with gradient)
+    -- Title Bar
     local TitleBar = Instance.new("Frame")
     TitleBar.Parent = MainFrame
-    TitleBar.BackgroundColor3 = theme.Primary
+    TitleBar.BackgroundColor3 = themeColor
+    TitleBar.BackgroundTransparency = 0.5
     TitleBar.Size = UDim2.new(1, 0, 0.1, 0)
 
     -- Title Text
     local TitleText = Instance.new("TextLabel")
     TitleText.Parent = TitleBar
     TitleText.Text = windowName
-    TitleText.Font = Enum.Font.SourceSansBold
+    TitleText.Font = Enum.Font.GothamBold
     TitleText.TextSize = 22
-    TitleText.TextColor3 = theme.Text
+    TitleText.TextColor3 = Color3.fromRGB(135, 206, 235) -- Skyblue color for text
     TitleText.BackgroundTransparency = 1
     TitleText.Size = UDim2.new(1, 0, 1, 0)
 
-    -- Minimize and Close Buttons
+    -- Minimize Button
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Parent = TitleBar
     MinimizeButton.Text = "_"
-    MinimizeButton.Font = Enum.Font.SourceSansBold
+    MinimizeButton.Font = Enum.Font.GothamBold
     MinimizeButton.TextSize = 20
-    MinimizeButton.TextColor3 = theme.Text
-    MinimizeButton.BackgroundColor3 = theme.Secondary
+    MinimizeButton.TextColor3 = Color3.fromRGB(135, 206, 235)
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
+    MinimizeButton.BackgroundTransparency = 0.7
     MinimizeButton.Size = UDim2.new(0.1, 0, 1, 0)
     MinimizeButton.Position = UDim2.new(0.8, 0, 0, 0)
 
+    -- Close Button
     local CloseButton = Instance.new("TextButton")
     CloseButton.Parent = TitleBar
     CloseButton.Text = "X"
-    CloseButton.Font = Enum.Font.SourceSansBold
+    CloseButton.Font = Enum.Font.GothamBold
     CloseButton.TextSize = 20
-    CloseButton.TextColor3 = theme.Text
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    CloseButton.BackgroundTransparency = 0.7
     CloseButton.Size = UDim2.new(0.1, 0, 1, 0)
     CloseButton.Position = UDim2.new(0.9, 0, 0, 0)
 
-    -- Tabs and Content Area (with rounded corners)
+    -- Tabs and Content Area
     local TabsContainer = Instance.new("Frame")
     TabsContainer.Parent = MainFrame
-    TabsContainer.BackgroundColor3 = theme.Secondary
+    TabsContainer.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    TabsContainer.BackgroundTransparency = 0.6
     TabsContainer.Size = UDim2.new(0.2, 0, 0.9, 0)
     TabsContainer.Position = UDim2.new(0, 0, 0.1, 0)
-    TabsContainer.ClipsDescendants = true
+
     local TabsLayout = Instance.new("UIListLayout", TabsContainer)
     TabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
     TabsLayout.Padding = UDim.new(0, 5)
 
     local ContentFrame = Instance.new("Frame")
     ContentFrame.Parent = MainFrame
-    ContentFrame.BackgroundColor3 = theme.Secondary
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
+    ContentFrame.BackgroundTransparency = 0.8
     ContentFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
     ContentFrame.Position = UDim2.new(0.2, 0, 0.1, 0)
 
@@ -146,14 +114,14 @@ function DaviHub:CreateWindow(settings)
         ScreenGui:Destroy()
     end)
 
-    -- Add Tab Functionality
+    -- Add Tab
     local function AddTab(tabName)
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabsContainer
         TabButton.Text = tabName
-        TabButton.BackgroundColor3 = theme.Secondary
+        TabButton.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
         TabButton.Size = UDim2.new(1, 0, 0, 30)
-        TabButton.TextColor3 = theme.Text
+        TabButton.TextColor3 = Color3.fromRGB(135, 206, 235) -- Skyblue for tab text
 
         local Page = Instance.new("ScrollingFrame")
         Page.Parent = ContentFrame
@@ -170,28 +138,29 @@ function DaviHub:CreateWindow(settings)
 
         TabButton.MouseButton1Click:Connect(function()
             for button, page in pairs(Pages) do
-                button.BackgroundColor3 = theme.Secondary
+                button.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
                 page.Visible = false
             end
-            TabButton.BackgroundColor3 = theme.Primary
+            TabButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
             Page.Visible = true
         end)
 
         if #TabsContainer:GetChildren() == 2 then
-            TabButton.BackgroundColor3 = theme.Primary
+            TabButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
             Page.Visible = true
         end
 
         return Page
     end
 
-    -- Add Button Functionality
+    -- Add Button
     local function AddButton(parent, text, callback)
         local Button = Instance.new("TextButton")
         Button.Parent = parent
         Button.Text = text
-        Button.BackgroundColor3 = theme.Button
-        Button.TextColor3 = theme.ButtonText
+        Button.BackgroundColor3 = Color3.fromRGB(48, 48, 48) -- Dark button background
+        Button.BackgroundTransparency = 0.5 -- Slight transparency for buttons
+        Button.TextColor3 = Color3.fromRGB(135, 206, 235) -- Skyblue text color
         Button.Size = UDim2.new(1, 0, 0, 30)
 
         Button.MouseButton1Click:Connect(function()
