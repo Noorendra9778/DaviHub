@@ -54,7 +54,7 @@ Customization: Easily customize the window, tab names, button labels, and colors
 
 Example of Full Setup:
 
-local DaviHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourGitHubUsername/YourRepo/main/DaviHub.lua"))()
+local DaviHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/Noorendra9778/DaviHub/main/DaviHub.lua"))()
 
 local Window = DaviHub:CreateWindow({
     Name = "My Custom Hub",
