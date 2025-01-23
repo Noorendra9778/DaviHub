@@ -1,6 +1,7 @@
 local DaviHub = {}
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -42,6 +43,7 @@ function DaviHub:CreateWindow(settings)
     TitleText.Size = UDim2.new(0.5, 0, 1, 0)
     TitleText.Position = UDim2.new(0.05, 0, 0, 0)
 
+    -- Minimize Button
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Parent = TitleBar
     MinimizeButton.Text = "-"
@@ -52,6 +54,7 @@ function DaviHub:CreateWindow(settings)
     MinimizeButton.Size = UDim2.new(0.1, 0, 1, 0)
     MinimizeButton.Position = UDim2.new(0.8, 0, 0, 0)
 
+    -- Close Button
     local CloseButton = Instance.new("TextButton")
     CloseButton.Parent = TitleBar
     CloseButton.Text = "X"
@@ -63,28 +66,68 @@ function DaviHub:CreateWindow(settings)
     CloseButton.Position = UDim2.new(0.9, 0, 0, 0)
 
     -- Tabs Container
-    local TabsContainer = Instance.new("ScrollingFrame")
+    local TabsContainer = Instance.new("Frame")
     TabsContainer.Parent = MainFrame
     TabsContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     TabsContainer.Size = UDim2.new(0.2, 0, 0.9, 0)
     TabsContainer.Position = UDim2.new(0, 0, 0.1, 0)
-    TabsContainer.CanvasSize = UDim2.new(0, 0, 2, 0)
-    TabsContainer.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 
     local TabsLayout = Instance.new("UIListLayout", TabsContainer)
     TabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
     TabsLayout.Padding = UDim.new(0, 5)
 
-    -- Content Frame
-    local ContentFrame = Instance.new("Frame")
+    -- Content Area (with scrollbar)
+    local ContentFrame = Instance.new("ScrollingFrame")
     ContentFrame.Parent = MainFrame
     ContentFrame.BackgroundColor3 = Color3.fromRGB(46, 46, 46)
     ContentFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
     ContentFrame.Position = UDim2.new(0.2, 0, 0.1, 0)
+    ContentFrame.CanvasSize = UDim2.new(0, 0, 2, 0) -- Scrollable content
+    ContentFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 
-    -- Add Tab Functionality
     local Pages = {}
 
+    -- Minimize and Close Functionality
+    MinimizeButton.MouseButton1Click:Connect(function()
+        MainFrame.Visible = not MainFrame.Visible
+    end)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    -- Dragging functionality
+    local isDragging = false
+    local dragStart
+    local startPos
+
+    TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            isDragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+        end
+    end)
+
+    TitleBar.InputChanged:Connect(function(input)
+        if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            MainFrame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    TitleBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            isDragging = false
+        end
+    end)
+
+    -- Add Tab Functionality
     local function AddTab(tabName)
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabsContainer
@@ -118,24 +161,8 @@ function DaviHub:CreateWindow(settings)
         return Page
     end
 
-    -- Add Button Functionality
-    local function AddButton(parent, text)
-        local Button = Instance.new("TextButton")
-        Button.Parent = parent
-        Button.Text = text
-        Button.Font = Enum.Font.GothamBold
-        Button.TextSize = 16
-        Button.TextColor3 = Color3.fromRGB(255, 69, 69)
-        Button.BackgroundColor3 = Color3.fromRGB(90, 20, 20)
-        Button.Size = UDim2.new(0.3, 0, 0.2, 0)
-
-        local UICorner = Instance.new("UICorner", Button)
-        UICorner.CornerRadius = UDim.new(0, 16)
-    end
-
     return {
         AddTab = AddTab,
-        AddButton = AddButton,
     }
 end
 
